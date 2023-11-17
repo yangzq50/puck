@@ -29,8 +29,8 @@ namespace similarity {
 template <class Function>
 inline void ParallelFor(size_t start, size_t end, size_t numThreads, Function fn) {
     if (numThreads <= 0) {
-        //numThreads = std::thread::hardware_concurrency();
-        numThreads = 1;
+        numThreads = std::thread::hardware_concurrency();
+        //numThreads = 1;
     }
 
     if (numThreads == 1) {

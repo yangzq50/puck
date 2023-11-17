@@ -13,7 +13,7 @@
 #include "puck/tinker/tinker_index.h"
 #include "puck/puck/realtime_insert_puck_index.h"
 
-constexpr int dim = 128;
+constexpr int dim = 96;
 constexpr int nq = 10000;
 constexpr int top_k = 100;
 
@@ -52,17 +52,17 @@ size_t physical_memory_used_by_process() {
 class my_TestIndex {
 public:
     my_TestIndex() {
-        std::string feature_dim = std::to_string(128);
+        std::string feature_dim = std::to_string(dim);
         google::SetCommandLineOption("feature_dim", feature_dim.c_str());
         google::SetCommandLineOption("whether_norm", "false");
-        google::SetCommandLineOption("kmeans_iterations_count", "10");
-        google::SetCommandLineOption("coarse_cluster_count", "100");
-        google::SetCommandLineOption("fine_cluster_count", "100");
-        google::SetCommandLineOption("search_coarse_count", "1");
-        google::SetCommandLineOption("train_points_count", "100000");
+        google::SetCommandLineOption("kmeans_iterations_count", "1");
+        google::SetCommandLineOption("coarse_cluster_count", "1000");
+        google::SetCommandLineOption("fine_cluster_count", "1000");
+        //google::SetCommandLineOption("search_coarse_count", "1");
+        //google::SetCommandLineOption("train_points_count", "100000");
 
-        _query_filename = "/home/yzq/sift1M/sift_query.fvecs";
-        _groundtruth_filename = "/home/yzq/sift1M/sift_groundtruth.ivecs";
+        _query_filename = "/home/yzq/Downloads/deep1B_queries.fvecs";
+        _groundtruth_filename = "/home/yzq/Downloads/gt/deep10M_groundtruth.ivecs";
     }
 
     ~my_TestIndex() = default;
