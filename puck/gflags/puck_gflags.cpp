@@ -44,6 +44,7 @@ DEFINE_bool(whether_norm, true, "whether norm");
 DEFINE_int32(coarse_cluster_count, 2000, "the number of coarse clusters");
 DEFINE_int32(fine_cluster_count, 2000, "the number of fine clusters");
 DEFINE_int32(threads_count, std::thread::hardware_concurrency(), "threads count");
+//DEFINE_int32(threads_count, 1, "threads count");
 
 DEFINE_int32(ip2cos, 0, "Convert ip to cos, 0-NA, 1-directly，2-need transform");
 
@@ -60,25 +61,29 @@ DEFINE_string(filter_data_file_name, "filter_data.dat", "filter data of points")
 //tinker
 DEFINE_string(tinker_file_name, "tinker_relations.dat", "tinker_file_name");
 DEFINE_int32(tinker_neighborhood, 16, "neighborhood conut");
-DEFINE_int32(tinker_construction, 600, "tinker_construction");
+//DEFINE_int32(tinker_construction, 600, "tinker_construction");
+DEFINE_int32(tinker_construction, 200, "tinker_construction");
 
 /***********检索参数*********/
 //检索相关
 //检索时，初始化内存池的size
-DEFINE_int32(context_initial_pool_size, std::thread::hardware_concurrency(), "search context pool size");
+DEFINE_int32(context_initial_pool_size, 1, "search context pool size");
+//DEFINE_int32(context_initial_pool_size, std::thread::hardware_concurrency(), "search context pool size");
 //检索通用参数
 DEFINE_int32(search_coarse_count, 200, "restrict the retrieval range in top-n nearest coarse clusters");
 DEFINE_int32(topk, 100, "return top-k nearest points");
 
 //HierarchicalClusterIndex
-DEFINE_int32(neighbors_count, 40000, "search points count, default value is 4w");
+//DEFINE_int32(neighbors_count, 40000, "search points count, default value is 4w");
+DEFINE_int32(neighbors_count, 40, "search points count, default value is 4w");
 
 //puck
 DEFINE_int32(filter_topk, FLAGS_topk * 11, "filter top-k");
 DEFINE_double(radius_rate, 1.0, "radius_rate");
 
 //tinker
-DEFINE_int32(tinker_search_range, FLAGS_topk * 5, "tinker search param, tinker_search_range");
+//DEFINE_int32(tinker_search_range, FLAGS_topk * 5, "tinker search param, tinker_search_range");
+DEFINE_int32(tinker_search_range, 10, "tinker search param, tinker_search_range");
 
 }
 

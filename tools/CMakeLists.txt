@@ -20,6 +20,11 @@ target_link_libraries(train glog)
 
 target_link_libraries(train  OpenMP::OpenMP_CXX)
 target_link_libraries(train  ${MKL_LIBRARIES})
+target_link_libraries(train
+        ${MKL_LIBRARIES}/libmkl_intel_lp64.a
+        ${MKL_LIBRARIES}/libmkl_sequential.a
+        ${MKL_LIBRARIES}/libmkl_core.a
+)
 
 add_executable(build)
 target_sources(build PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/build.cpp)
@@ -27,6 +32,11 @@ target_sources(build PUBLIC ${PUCK_CPP_FILES})
 target_compile_definitions(build PUBLIC)
 target_link_libraries(build  OpenMP::OpenMP_CXX)
 target_link_libraries(build  ${MKL_LIBRARIES})
+target_link_libraries(build
+        ${MKL_LIBRARIES}/libmkl_intel_lp64.a
+        ${MKL_LIBRARIES}/libmkl_sequential.a
+        ${MKL_LIBRARIES}/libmkl_core.a
+)
 
 target_link_libraries(build gflags)
 target_link_libraries(build glog) 

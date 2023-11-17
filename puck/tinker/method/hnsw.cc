@@ -210,6 +210,7 @@ Hnsw<dist_t>::CreateIndex(const AnyParams& IndexParams) {
     searchMethod_ = 0;
 
     indexThreadQty_ = 64;//std::thread::hardware_concurrency();
+    //indexThreadQty_ = 1;
 
     pmgr.GetParamOptional("indexThreadQty", indexThreadQty_, indexThreadQty_);
     // indexThreadQty_ = 1;

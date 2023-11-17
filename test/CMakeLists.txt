@@ -23,8 +23,20 @@ target_link_libraries(runtest PUBLIC
     puck
     gtest_main
 )
+target_link_libraries(runtest PUBLIC
+        ${MKL_LIBRARIES}/libmkl_intel_lp64.a
+        ${MKL_LIBRARIES}/libmkl_sequential.a
+        ${MKL_LIBRARIES}/libmkl_core.a
+)
 
 gtest_discover_tests(runtest)
 
 set(GTEST_TOOLS_PREFIX ${CMAKE_INSTALL_PREFIX}/test)
 install(TARGETS runtest  DESTINATION ${GTEST_TOOLS_PREFIX})
+
+include_directories(../)
+add_executable(my_benchmark my_benchmark.cpp)
+
+target_link_libraries(my_benchmark PUBLIC
+    puck
+)
