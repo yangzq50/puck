@@ -41,10 +41,10 @@ DEFINE_string(label_file_name, "all_data.url", "label of points");
 DEFINE_int32(feature_dim, 256, "feature dim");
 DEFINE_bool(whether_norm, true, "whether norm");
 
-//DEFINE_int32(coarse_cluster_count, 2000, "the number of coarse clusters");
-//DEFINE_int32(fine_cluster_count, 2000, "the number of fine clusters");
-DEFINE_int32(coarse_cluster_count, 1000, "the number of coarse clusters");
-DEFINE_int32(fine_cluster_count, 1000, "the number of fine clusters");
+DEFINE_int32(coarse_cluster_count, 2000, "the number of coarse clusters");
+DEFINE_int32(fine_cluster_count, 2000, "the number of fine clusters");
+//DEFINE_int32(coarse_cluster_count, 1000, "the number of coarse clusters");
+//DEFINE_int32(fine_cluster_count, 1000, "the number of fine clusters");
 DEFINE_int32(threads_count, std::thread::hardware_concurrency(), "threads count");
 //DEFINE_int32(threads_count, 1, "threads count");
 
