@@ -627,6 +627,8 @@ private:
 
     //AlgoType searchAlgoType_;
     size_t objectDataOffset_;
+public:
+    size_t distance_computations_ = 0;
 protected:
     //DISABLE_COPY_AND_ASSIGN(Hnsw);
 };

@@ -55,11 +55,17 @@ public:
         std::string feature_dim = std::to_string(dim);
         google::SetCommandLineOption("feature_dim", feature_dim.c_str());
         google::SetCommandLineOption("whether_norm", "false");
-        google::SetCommandLineOption("kmeans_iterations_count", "1");
-        google::SetCommandLineOption("coarse_cluster_count", "1000");
-        google::SetCommandLineOption("fine_cluster_count", "1000");
-        google::SetCommandLineOption("search_coarse_count", "2");
-        google::SetCommandLineOption("tinker_search_range", "443");
+        //google::SetCommandLineOption("kmeans_iterations_count", "1");
+        google::SetCommandLineOption("coarse_cluster_count", "316");
+        google::SetCommandLineOption("fine_cluster_count", "316");
+        google::SetCommandLineOption("search_coarse_count", "1");
+        google::SetCommandLineOption("tinker_search_range", "100");
+        google::SetCommandLineOption("index_file_name", "index_316.dat");
+        google::SetCommandLineOption("coarse_codebook_file_name", "coarse_316.dat");
+        google::SetCommandLineOption("fine_codebook_file_name", "fine_316.dat");
+        google::SetCommandLineOption("cell_assign_file_name", "cell_assign_316.dat");
+        google::SetCommandLineOption("tinker_file_name", "tinker_relations_316.dat");
+        google::SetCommandLineOption("train_fea_file_name", "mid-data/train_clusters_316.dat");
         //google::SetCommandLineOption("train_points_count", "100000");
 
         _query_filename = "/home/yzq/Downloads/deep1B_queries.fvecs";
@@ -83,16 +89,6 @@ public:
     }
 
     int build_index(int index_type) {
-// if (index_type == int(puck::IndexType::TINKER)) {
-//     _index.reset(new puck::TinkerIndex());
-// } else if (index_type == int(puck::IndexType::PUCK)) {
-//     _index.reset(new puck::PuckIndex());
-// } else if (index_type == int(puck::IndexType::HIERARCHICAL_CLUSTER)) {
-//     _index.reset(new puck::HierarchicalClusterIndex());
-// } else {
-//     std::cerr << "index type error.\n";
-//     return -1;
-// }
         if (reset_index(index_type) != 0) {
             std::cerr << "reset index error.\n";
             return -1;
@@ -211,6 +207,10 @@ public:
         std::cout << "avg_loop_cnt:" << avg_loop_cnt << std::endl;
         //output percentage
         std::cout << "percentage:" << avg_loop_cnt / avg_tot_cnt << std::endl;
+        //output avg hnsw distance_computations
+        std::cout << "avg hnsw distance_computations:"
+                  << (double) (((puck::TinkerIndex *) _index.get())->_tinker_index->distance_computations_) / nq
+                  << std::endl;
 
         //output tinker_search_range
         std::cout << "tinker_search_range:" << puck::FLAGS_tinker_search_range << std::endl;
@@ -312,13 +312,11 @@ int main() {
             std::cout << "after releasing old index, consuming" << kb_r / 1024.0 << " MB" << std::endl;
             auto t1 = now_time();
             std::cout << "time passed:" << t1 - t0 << std::endl;
-            /*
             ti.build_index(int(puck::IndexType::TINKER));
             auto kb_5 = physical_memory_used_by_process();
             std::cout << "after build TinkerIndex, consuming" << kb_5 / 1024.0 << " MB" << std::endl;
             auto t2 = now_time();
             std::cout << "time passed:" << t2 - t1 << std::endl;
-            */
             ti.reset_index(int(puck::IndexType::TINKER));
             auto rec3 = ti.cmp_search_recall();
             std::cout << "recall=" << rec3 << std::endl;
