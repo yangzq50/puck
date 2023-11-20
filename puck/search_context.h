@@ -71,6 +71,7 @@ struct SearchPointData {
 struct Request;
 class SearchContext {
 public:
+    size_t loop_cnt = 0, tot_cnt = 0;
     SearchContext();
     virtual ~SearchContext();
 

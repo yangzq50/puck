@@ -81,7 +81,9 @@ int TinkerIndex::search_top1_fine_cluster(puck::SearchContext* context, const fl
         float min_dist = _coarse_clusters[coarse_id].min_dist_offset + coarse_distance[l];
         float max_stationary_dist = nearest_cell.first - coarse_distance[l] - search_cell_data.fine_distance[0];
 
+        context->tot_cnt += _conf.fine_cluster_count;
         for (uint32_t idx = 0; idx < _conf.fine_cluster_count; ++idx) {
+            ++(context->loop_cnt);
             if (search_cell_data.fine_distance[idx] + min_dist >= nearest_cell.first) {
                 break;
             }
@@ -131,10 +133,15 @@ int TinkerIndex::search(const Request* request, Response* response) {
         return ret;
     }
 
+    context->loop_cnt = 0;
+    context->tot_cnt = 0;
     int nearest_cell_id = search_top1_fine_cluster(context.get(), feature);
     const auto* cur_fine_cluster = get_fine_cluster(nearest_cell_id);
     std::vector<int> eps;
 
+    //output context->loop_cnt / context->tot_cnt
+    response->loop_cnt += context->loop_cnt;
+    response->tot_cnt += context->tot_cnt;
     for (auto i = cur_fine_cluster->memory_idx_start; i < (cur_fine_cluster + 1)->memory_idx_start; ++i) {
         eps.push_back(i);
     }
@@ -202,7 +209,7 @@ int TinkerIndex::build() {
         object_data[memory_idx] = cur_object;
     }
     data_stream.close();
-    
+
     _tinker_index.reset(new similarity::Hnsw<float>(*_space.get(), object_data));
     _tinker_index->CreateIndex(*_any_params.get());
     std::string tinker_index_file = _conf.index_path + "/" + puck::FLAGS_tinker_file_name;

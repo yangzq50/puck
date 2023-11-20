@@ -58,8 +58,8 @@ public:
         google::SetCommandLineOption("kmeans_iterations_count", "1");
         google::SetCommandLineOption("coarse_cluster_count", "1000");
         google::SetCommandLineOption("fine_cluster_count", "1000");
-        google::SetCommandLineOption("search_coarse_count", "10");
-        google::SetCommandLineOption("tinker_search_range", "200");
+        google::SetCommandLineOption("search_coarse_count", "2");
+        google::SetCommandLineOption("tinker_search_range", "443");
         //google::SetCommandLineOption("train_points_count", "100000");
 
         _query_filename = "/home/yzq/Downloads/deep1B_queries.fvecs";
@@ -172,16 +172,22 @@ public:
         puck::Response response;
         request.topk = top_k;
 
-        auto t0 = now_time();
-
         std::vector<float> distance(request.topk * nq);
         std::vector<uint32_t> local_idx(request.topk * nq);
         response.distance = distance.data();
         response.local_idx = local_idx.data();
         uint32_t match_pair_cnt = 0;
+
+        double tot_time = 0;
+        double calc_recall_time = 0;
+
         for (int i = 0; i < nq; ++i) {
             request.feature = query_feature.data() + i * dim;
+
+            auto t0 = now_time();
             ret = _index->search(&request, &response);
+            tot_time += now_time() - t0;
+            auto t1 = now_time();
 
             if (ret != 0) {
                 std::cerr << "search item " << i << " error" << ret << std::endl;
@@ -197,18 +203,25 @@ public:
                     ++match_pair_cnt;
                 }
             }
+            calc_recall_time += now_time() - t1;
         }
+        double avg_tot_cnt = (double)response.tot_cnt/nq;
+        std::cout << "avg_tot_cnt:" << avg_tot_cnt << std::endl;
+        double avg_loop_cnt = (double)response.loop_cnt/nq;
+        std::cout << "avg_loop_cnt:" << avg_loop_cnt << std::endl;
+        //output percentage
+        std::cout << "percentage:" << avg_loop_cnt / avg_tot_cnt << std::endl;
 
-        auto t1 = now_time();
         //output tinker_search_range
         std::cout << "tinker_search_range:" << puck::FLAGS_tinker_search_range << std::endl;
         //output search time
         std::cout << "\n###########################################" << std::endl;
-        std::cout << "time: " << t1 - t0 << " s" << std::endl;
+        std::cout << "time: " << tot_time << " s" << std::endl;
         //output qps
-        std::cout << "qps: " << nq / (t1 - t0) << std::endl;
+        std::cout << "qps: " << nq / (tot_time) << std::endl;
         std::cout << "recall = " << 1.0 * match_pair_cnt / (nq * top_k) << std::endl;
         std::cout << "###########################################\n" << std::endl;
+        std::cout << "calc recall time: " << calc_recall_time << " s" << std::endl;
         return 1.0 * match_pair_cnt / (nq * top_k);
     }
 

@@ -69,8 +69,8 @@ DEFINE_int32(tinker_construction, 600, "tinker_construction");
 /***********检索参数*********/
 //检索相关
 //检索时，初始化内存池的size
-DEFINE_int32(context_initial_pool_size, 1, "search context pool size");
-//DEFINE_int32(context_initial_pool_size, std::thread::hardware_concurrency(), "search context pool size");
+//DEFINE_int32(context_initial_pool_size, 1, "search context pool size");
+DEFINE_int32(context_initial_pool_size, std::thread::hardware_concurrency(), "search context pool size");
 //检索通用参数
 DEFINE_int32(search_coarse_count, 200, "restrict the retrieval range in top-n nearest coarse clusters");
 DEFINE_int32(topk, 100, "return top-k nearest points");

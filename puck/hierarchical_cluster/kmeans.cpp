@@ -223,7 +223,6 @@ int nearest_center(uint32_t dim, const float* centroids, const size_t centroid_c
     std::vector<float> points_norm(point_cnt);
     std::vector<float> centroids_norm(centroid_cnt);
     int nt = std::thread::hardware_concurrency();
-    //int nt = 1;
 
     #pragma omp parallel for schedule(dynamic) num_threads(nt)
 

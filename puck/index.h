@@ -69,6 +69,7 @@ public:
 };
 
 struct Response {
+    size_t loop_cnt = 0, tot_cnt = 0;
     float* distance;
     uint32_t* local_idx;
     uint32_t result_num;

@@ -210,7 +210,6 @@ Hnsw<dist_t>::CreateIndex(const AnyParams& IndexParams) {
     searchMethod_ = 0;
 
     indexThreadQty_ = 64;//std::thread::hardware_concurrency();
-    //indexThreadQty_ = 1;
 
     pmgr.GetParamOptional("indexThreadQty", indexThreadQty_, indexThreadQty_);
     // indexThreadQty_ = 1;
@@ -397,7 +396,6 @@ Hnsw<dist_t>::SetQueryTimeParams(const AnyParams& QueryTimeParams) {
     }
 
     // ef and efSearch are going to be parameter-synonyms with the default value 20
-    //pmgr.GetParamOptional("ef", ef_, 20);
     pmgr.GetParamOptional("ef", ef_, 20);
     pmgr.GetParamOptional("efSearch", ef_, ef_);
 
