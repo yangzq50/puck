@@ -36,6 +36,11 @@ target_link_libraries(puck PUBLIC glog)
     
 target_link_libraries(puck PUBLIC OpenMP::OpenMP_CXX)
 target_link_libraries(puck PUBLIC ${MKL_LIBRARIES})
+target_link_libraries(puck PUBLIC
+        ${MKL_LIBRARIES}/libmkl_intel_lp64.a
+        ${MKL_LIBRARIES}/libmkl_sequential.a
+        ${MKL_LIBRARIES}/libmkl_core.a
+)
 
 
 set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)

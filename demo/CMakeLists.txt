@@ -19,6 +19,11 @@ target_compile_definitions(search_client PUBLIC)
 
 target_link_libraries(search_client  OpenMP::OpenMP_CXX)
 target_link_libraries(search_client  ${MKL_LIBRARIES})
+target_link_libraries(search_client
+        ${MKL_LIBRARIES}/libmkl_intel_lp64.a
+        ${MKL_LIBRARIES}/libmkl_sequential.a
+        ${MKL_LIBRARIES}/libmkl_core.a
+)
 target_link_libraries(search_client gflags)
 target_link_libraries(search_client glog)
 
@@ -29,6 +34,11 @@ target_compile_definitions(insert_demo PUBLIC)
 
 target_link_libraries(insert_demo  OpenMP::OpenMP_CXX)
 target_link_libraries(insert_demo  ${MKL_LIBRARIES})
+target_link_libraries(insert_demo
+        ${MKL_LIBRARIES}/libmkl_intel_lp64.a
+        ${MKL_LIBRARIES}/libmkl_sequential.a
+        ${MKL_LIBRARIES}/libmkl_core.a
+)
 target_link_libraries(insert_demo gflags)
 target_link_libraries(insert_demo glog)
 

@@ -23,6 +23,11 @@ target_link_libraries(runtest PUBLIC
     puck
     gtest_main
 )
+target_link_libraries(runtest PUBLIC
+        ${MKL_LIBRARIES}/libmkl_intel_lp64.a
+        ${MKL_LIBRARIES}/libmkl_sequential.a
+        ${MKL_LIBRARIES}/libmkl_core.a
+)
 
 gtest_discover_tests(runtest)
 
