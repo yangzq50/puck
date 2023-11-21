@@ -1,7 +1,9 @@
 //
 // Created by yzq on 11/16/23.
 //
-#define test_316 0
+#define test_sift1M 0
+//#define test_deep10M 0
+//#define test_316 0
 //#define test_1000 0
 
 #include <cstring>
@@ -15,22 +17,70 @@
 #include "puck/tinker/tinker_index.h"
 #include "puck/puck/realtime_insert_puck_index.h"
 
+constexpr bool build_tinker = true;
 constexpr int dim = 96;
 constexpr int nq = 10000;
 constexpr int top_k = 100;
 constexpr int repeat_time = 10;
-constexpr bool build_tinker = false;
-constexpr bool search_only = false;
-constexpr char* sift1M_base = "/home/benchmark/benchmark_dataset/sift1M/sift_base.fvecs";
-constexpr char* sift1M_query = "/home/benchmark/benchmark_dataset/sift1M/sift_query.fvecs";
-constexpr char* sift1M_groundtruth = "/home/benchmark/benchmark_dataset/sift1M/sift_groundtruth.ivecs";
-constexpr char* deep10M_base = "/home/benchmark/benchmark_dataset/deep10M/deep10M_base.fvecs";
-constexpr char* deep10M_query = "/home/benchmark/benchmark_dataset/deep10M/deep10M_query.fvecs";
-constexpr char* deep10M_groundtruth = "/home/benchmark/benchmark_dataset/deep10M/deep10M_groundtruth.ivecs";
+constexpr size_t coarse_cluster_count = 100;
+constexpr size_t fine_cluster_count = 100;
+constexpr size_t search_coarse_count = 1;
+constexpr size_t tinker_search_range = 100;
+constexpr size_t train_points_count = 0;
+constexpr char *sift1M_base = "/home/benchmark/benchmark_dataset/sift1M/sift_base.fvecs";
+constexpr char *sift1M_query = "/home/benchmark/benchmark_dataset/sift1M/sift_query.fvecs";
+constexpr char *sift1M_groundtruth = "/home/benchmark/benchmark_dataset/sift1M/sift_groundtruth.ivecs";
+constexpr char *deep10M_base = "/home/benchmark/benchmark_dataset/deep10M/deep10M_base.fvecs";
+constexpr char *deep10M_query = "/home/benchmark/benchmark_dataset/deep10M/deep10M_query.fvecs";
+constexpr char *deep10M_groundtruth = "/home/benchmark/benchmark_dataset/deep10M/deep10M_groundtruth.ivecs";
+#ifdef test_sift1M
+constexpr char *choose_base = sift1M_base;
+constexpr char *choose_query = sift1M_query;
+constexpr char *choose_groundtruth = sift1M_groundtruth;
+#endif
+#ifdef test_deep10M
+constexpr char *choose_base = deep10M_base;
+constexpr char *choose_query = deep10M_query;
+constexpr char *choose_groundtruth = deep10M_groundtruth;
+#endif
+//sift1M save files
+constexpr char *sift1M_feature_file_name = sift1M_base;
+constexpr char *sift1M_train_fea_file_name = "/home/benchmark/benchmark_save_index/sift1M/train_fea.dat";
+constexpr char *sift1M_index_file_name = "/home/benchmark/benchmark_save_index/sift1M/index.dat";
+constexpr char *sift1M_coarse_codebook_file_name = "/home/benchmark/benchmark_save_index/sift1M/coarse.dat";
+constexpr char *sift1M_fine_codebook_file_name = "/home/benchmark/benchmark_save_index/sift1M/fine.dat";
+constexpr char *sift1M_cell_assign_file_name = "/home/benchmark/benchmark_save_index/sift1M/cell_assign.dat";
+constexpr char *sift1M_tinker_file_name = "/home/benchmark/benchmark_save_index/sift1M/tinker_relations.dat";
 
-constexpr char* choose_base = sift1M_base;
-constexpr char* choose_query = sift1M_query;
-constexpr char* choose_groundtruth = sift1M_groundtruth;
+//deep10M save files
+constexpr char *deep10M_feature_file_name = deep10M_base;
+constexpr char *deep10M_train_fea_file_name = "/home/benchmark/benchmark_save_index/deep10M/train_fea.dat";
+constexpr char *deep10M_index_file_name = "/home/benchmark/benchmark_save_index/deep10M/index.dat";
+constexpr char *deep10M_coarse_codebook_file_name = "/home/benchmark/benchmark_save_index/deep10M/coarse.dat";
+constexpr char *deep10M_fine_codebook_file_name = "/home/benchmark/benchmark_save_index/deep10M/fine.dat";
+constexpr char *deep10M_cell_assign_file_name = "/home/benchmark/benchmark_save_index/deep10M/cell_assign.dat";
+constexpr char *deep10M_tinker_file_name = "/home/benchmark/benchmark_save_index/deep10M/tinker_relations.dat";
+
+//choosen edition
+#ifdef test_sift1M
+constexpr char *feature_file_name = sift1M_feature_file_name;
+constexpr char *train_fea_file_name = sift1M_train_fea_file_name;
+constexpr char *index_file_name = sift1M_index_file_name;
+constexpr char *coarse_codebook_file_name = sift1M_coarse_codebook_file_name;
+constexpr char *fine_codebook_file_name = sift1M_fine_codebook_file_name;
+constexpr char *cell_assign_file_name = sift1M_cell_assign_file_name;
+constexpr char *tinker_file_name = sift1M_tinker_file_name;
+#endif
+#ifdef test_deep10M
+constexpr char *feature_file_name = deep10M_feature_file_name;
+constexpr char *train_fea_file_name = deep10M_train_fea_file_name;
+constexpr char *index_file_name = deep10M_index_file_name;
+constexpr char *coarse_codebook_file_name = deep10M_coarse_codebook_file_name;
+constexpr char *fine_codebook_file_name = deep10M_fine_codebook_file_name;
+constexpr char *cell_assign_file_name = deep10M_cell_assign_file_name;
+constexpr char *tinker_file_name = deep10M_tinker_file_name;
+#endif
+
 
 double now_time() {
     struct timeval tv;
@@ -70,25 +120,27 @@ public:
         std::string feature_dim = std::to_string(dim);
         google::SetCommandLineOption("feature_dim", feature_dim.c_str());
         google::SetCommandLineOption("whether_norm", "false");
-        google::SetCommandLineOption("search_coarse_count", "1");
-        google::SetCommandLineOption("tinker_search_range", "500");
+        auto s_search_coarse_count = std::to_string(search_coarse_count);
+        google::SetCommandLineOption("search_coarse_count", s_search_coarse_count.c_str());
+        google::SetCommandLineOption("tinker_search_range", std::to_string(tinker_search_range).c_str());
         //google::SetCommandLineOption("kmeans_iterations_count", "1");
 #ifdef test_1000
         google::SetCommandLineOption("coarse_cluster_count", "1000");
         google::SetCommandLineOption("fine_cluster_count", "1000");
 #endif
-#ifdef test_316
         google::SetCommandLineOption("coarse_cluster_count", "316");
         google::SetCommandLineOption("fine_cluster_count", "316");
-        google::SetCommandLineOption("index_file_name", "index_316.dat");
-        google::SetCommandLineOption("coarse_codebook_file_name", "coarse_316.dat");
-        google::SetCommandLineOption("fine_codebook_file_name", "fine_316.dat");
-        google::SetCommandLineOption("cell_assign_file_name", "cell_assign_316.dat");
-        google::SetCommandLineOption("tinker_file_name", "tinker_relations_316.dat");
-        google::SetCommandLineOption("train_fea_file_name", "mid-data/train_clusters_316.dat");
-#endif
-        //google::SetCommandLineOption("train_points_count", "100000");
-
+        google::SetCommandLineOption("feature_file_name", feature_file_name);
+        google::SetCommandLineOption("train_fea_file_name", train_fea_file_name);
+        google::SetCommandLineOption("index_file_name", index_file_name);
+        google::SetCommandLineOption("coarse_codebook_file_name", coarse_codebook_file_name);
+        google::SetCommandLineOption("fine_codebook_file_name", fine_codebook_file_name);
+        google::SetCommandLineOption("cell_assign_file_name", cell_assign_file_name);
+        google::SetCommandLineOption("tinker_file_name", tinker_file_name);
+        google::SetCommandLineOption("train_fea_file_name", train_fea_file_name);
+        if (train_points_count != 0) {
+            google::SetCommandLineOption("train_points_count", std::to_string(train_points_count).c_str());
+        }
         _query_filename = choose_query;
         _groundtruth_filename = choose_groundtruth;
     }
@@ -274,39 +326,27 @@ int main() {
         my_TestIndex ti;
         auto kb_0 = physical_memory_used_by_process();
         std::cout << "Before test, consuming" << kb_0 / 1024.0 << " MB" << std::endl;
-        if (build_tinker) {
+        {
             auto t0 = now_time();
             ti.release();
             auto kb_r = physical_memory_used_by_process();
             std::cout << "after releasing old index, consuming" << kb_r / 1024.0 << " MB" << std::endl;
             auto t1 = now_time();
             std::cout << "time passed:" << t1 - t0 << std::endl;
-            ti.build_index(int(puck::IndexType::TINKER));
-            auto kb_5 = physical_memory_used_by_process();
-            std::cout << "after build TinkerIndex, consuming" << kb_5 / 1024.0 << " MB" << std::endl;
-            auto t2 = now_time();
-            std::cout << "time passed:" << t2 - t1 << std::endl;
+            auto t2 = t1;
+            if (build_tinker) {
+                ti.build_index(int(puck::IndexType::TINKER));
+                auto kb_5 = physical_memory_used_by_process();
+                std::cout << "after build TinkerIndex, consuming" << kb_5 / 1024.0 << " MB" << std::endl;
+                t2 = now_time();
+                std::cout << "time passed:" << t2 - t1 << std::endl;
+            }
             auto rec3 = ti.cmp_search_recall();
             std::cout << "recall=" << rec3 << std::endl;
             auto kb_6 = physical_memory_used_by_process();
             std::cout << "after calculate TinkerIndex recall, consuming" << kb_6 / 1024.0 << " MB" << std::endl;
             auto t3 = now_time();
             std::cout << "time passed:" << t3 - t2 << std::endl;
-        }
-        if (search_only) {
-            auto t0 = now_time();
-            ti.release();
-            auto kb_r = physical_memory_used_by_process();
-            std::cout << "after releasing old index, consuming" << kb_r / 1024.0 << " MB" << std::endl;
-            auto t1 = now_time();
-            std::cout << "time passed:" << t1 - t0 << std::endl;
-            ti.reset_index(int(puck::IndexType::TINKER));
-            auto rec3 = ti.cmp_search_recall();
-            std::cout << "recall=" << rec3 << std::endl;
-            auto kb_6 = physical_memory_used_by_process();
-            std::cout << "after calculate TinkerIndex recall, consuming" << kb_6 / 1024.0 << " MB" << std::endl;
-            auto t3 = now_time();
-            std::cout << "time passed:" << t3 - t1 << std::endl;
         }
         auto t_out3 = now_time();
         std::cout << "\n\nTinkerIndex, time passed:" << t_out3 - t_out << "\n\n";
