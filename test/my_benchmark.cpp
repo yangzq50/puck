@@ -123,23 +123,13 @@ public:
         google::SetCommandLineOption("whether_norm", "false");
         auto s_search_coarse_count = std::to_string(search_coarse_count);
         google::SetCommandLineOption("search_coarse_count", s_search_coarse_count.c_str());
-        google::SetCommandLineOption("tinker_search_range", std::to_string(tinker_search_range).c_str());
+        auto s_tinker_search_range = std::to_string(tinker_search_range);
+        google::SetCommandLineOption("tinker_search_range", s_tinker_search_range.c_str());
         //google::SetCommandLineOption("kmeans_iterations_count", "1");
-#ifdef test_1000
-        google::SetCommandLineOption("coarse_cluster_count", "1000");
-        google::SetCommandLineOption("fine_cluster_count", "1000");
-#endif
-        google::SetCommandLineOption("coarse_cluster_count", "316");
-        google::SetCommandLineOption("fine_cluster_count", "316");
-        google::SetCommandLineOption("index_path", "");
-        google::SetCommandLineOption("feature_file_name", feature_file_name);
-        google::SetCommandLineOption("train_fea_file_name", train_fea_file_name);
-        google::SetCommandLineOption("index_file_name", index_file_name);
-        google::SetCommandLineOption("coarse_codebook_file_name", coarse_codebook_file_name);
-        google::SetCommandLineOption("fine_codebook_file_name", fine_codebook_file_name);
-        google::SetCommandLineOption("cell_assign_file_name", cell_assign_file_name);
-        google::SetCommandLineOption("tinker_file_name", tinker_file_name);
-        google::SetCommandLineOption("train_fea_file_name", train_fea_file_name);
+        auto s_coarse_cluster_count = std::to_string(coarse_cluster_count);
+        google::SetCommandLineOption("coarse_cluster_count", s_coarse_cluster_count.c_str());
+        auto s_fine_cluster_count = std::to_string(fine_cluster_count);
+        google::SetCommandLineOption("fine_cluster_count", s_fine_cluster_count.c_str());
         if (train_points_count != 0) {
             google::SetCommandLineOption("train_points_count", std::to_string(train_points_count).c_str());
         }
@@ -321,6 +311,15 @@ private:
 };
 
 int main() {
+    google::SetCommandLineOption("index_path", index_path_root);
+    google::SetCommandLineOption("feature_file_name", feature_file_name);
+    google::SetCommandLineOption("train_fea_file_name", train_fea_file_name);
+    google::SetCommandLineOption("index_file_name", index_file_name);
+    google::SetCommandLineOption("coarse_codebook_file_name", coarse_codebook_file_name);
+    google::SetCommandLineOption("fine_codebook_file_name", fine_codebook_file_name);
+    google::SetCommandLineOption("cell_assign_file_name", cell_assign_file_name);
+    google::SetCommandLineOption("tinker_file_name", tinker_file_name);
+    google::SetCommandLineOption("train_fea_file_name", train_fea_file_name);
     auto t_out = now_time();
     auto kb_ = physical_memory_used_by_process();
     std::cout << "begin, consuming" << kb_ / 1024.0 << " MB" << std::endl;
