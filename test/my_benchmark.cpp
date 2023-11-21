@@ -45,7 +45,7 @@ constexpr char *choose_groundtruth = deep10M_groundtruth;
 #endif
 constexpr char *index_path_root = "/home/benchmark/benchmark_save_index/tinker_index";
 //sift1M save files
-constexpr char *sift1M_feature_file_name = sift1M_base;
+constexpr char *sift1M_feature_file_name = "sift1M/sift_base.fvecs";;
 constexpr char *sift1M_train_fea_file_name = "sift1M/train_fea.dat";
 constexpr char *sift1M_index_file_name = "sift1M/index.dat";
 constexpr char *sift1M_coarse_codebook_file_name = "sift1M/coarse.dat";
@@ -54,7 +54,7 @@ constexpr char *sift1M_cell_assign_file_name = "sift1M/cell_assign.dat";
 constexpr char *sift1M_tinker_file_name = "sift1M/tinker_relations.dat";
 
 //deep10M save files
-constexpr char *deep10M_feature_file_name = deep10M_base;
+constexpr char *deep10M_feature_file_name = "deep10M/deep10M_base.fvecs";
 constexpr char *deep10M_train_fea_file_name = "deep10M/train_fea.dat";
 constexpr char *deep10M_index_file_name = "deep10M/index.dat";
 constexpr char *deep10M_coarse_codebook_file_name = "deep10M/coarse.dat";
