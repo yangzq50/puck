@@ -81,7 +81,9 @@ int TinkerIndex::search_top1_fine_cluster(puck::SearchContext* context, const fl
         float min_dist = _coarse_clusters[coarse_id].min_dist_offset + coarse_distance[l];
         float max_stationary_dist = nearest_cell.first - coarse_distance[l] - search_cell_data.fine_distance[0];
 
+        context->tot_cnt += _conf.fine_cluster_count;
         for (uint32_t idx = 0; idx < _conf.fine_cluster_count; ++idx) {
+            ++(context->loop_cnt);
             if (search_cell_data.fine_distance[idx] + min_dist >= nearest_cell.first) {
                 break;
             }

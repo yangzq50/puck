@@ -64,6 +64,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN_AND_MOVE(TinkerIndex);
     //Tinker _tinker;
     std::unique_ptr<similarity::AnyParams> _any_params;
+public:
     std::unique_ptr<similarity::Hnsw<float>> _tinker_index;
     std::unique_ptr<similarity::SpaceLp<float>> _space;
 };

@@ -98,6 +98,8 @@ Hnsw<dist_t>::SearchOld_level0(const float* pVectq, const size_t feature_dim, co
             }
         }
     }
+    //output distance_computations
+    distance_computations_ += distance_computations;
 
     visitedlistpool->releaseVisitedList(vl);
 }

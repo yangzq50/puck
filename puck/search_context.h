@@ -129,6 +129,8 @@ private:
     SearchCellData _search_cell_data;
     SearchPointData _search_point_data;
     //DISALLOW_COPY_AND_ASSIGN(SearchContext);
+public:
+    size_t loop_cnt = 0, tot_cnt = 0;
 };
 /*
 inline void SearchContext::log_push(const char* key, const char* fmt, ...) {

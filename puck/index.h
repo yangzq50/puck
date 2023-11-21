@@ -78,6 +78,7 @@ struct Response {
         local_idx = nullptr;
         result_num = 0;
     }
+    size_t loop_cnt = 0, tot_cnt = 0;
 };
 
 enum class IndexType {

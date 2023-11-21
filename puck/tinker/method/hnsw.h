@@ -629,6 +629,8 @@ private:
     size_t objectDataOffset_;
 protected:
     //DISABLE_COPY_AND_ASSIGN(Hnsw);
+public:
+    size_t distance_computations_ = 0;
 };
 
 typedef unsigned char vl_type;
