@@ -43,23 +43,24 @@ constexpr char *choose_base = deep10M_base;
 constexpr char *choose_query = deep10M_query;
 constexpr char *choose_groundtruth = deep10M_groundtruth;
 #endif
+constexpr char *index_path_root = "/home/benchmark/benchmark_save_index/tinker_index";
 //sift1M save files
 constexpr char *sift1M_feature_file_name = sift1M_base;
-constexpr char *sift1M_train_fea_file_name = "/home/benchmark/benchmark_save_index/sift1M/train_fea.dat";
-constexpr char *sift1M_index_file_name = "/home/benchmark/benchmark_save_index/sift1M/index.dat";
-constexpr char *sift1M_coarse_codebook_file_name = "/home/benchmark/benchmark_save_index/sift1M/coarse.dat";
-constexpr char *sift1M_fine_codebook_file_name = "/home/benchmark/benchmark_save_index/sift1M/fine.dat";
-constexpr char *sift1M_cell_assign_file_name = "/home/benchmark/benchmark_save_index/sift1M/cell_assign.dat";
-constexpr char *sift1M_tinker_file_name = "/home/benchmark/benchmark_save_index/sift1M/tinker_relations.dat";
+constexpr char *sift1M_train_fea_file_name = "sift1M/train_fea.dat";
+constexpr char *sift1M_index_file_name = "sift1M/index.dat";
+constexpr char *sift1M_coarse_codebook_file_name = "sift1M/coarse.dat";
+constexpr char *sift1M_fine_codebook_file_name = "sift1M/fine.dat";
+constexpr char *sift1M_cell_assign_file_name = "sift1M/cell_assign.dat";
+constexpr char *sift1M_tinker_file_name = "sift1M/tinker_relations.dat";
 
 //deep10M save files
 constexpr char *deep10M_feature_file_name = deep10M_base;
-constexpr char *deep10M_train_fea_file_name = "/home/benchmark/benchmark_save_index/deep10M/train_fea.dat";
-constexpr char *deep10M_index_file_name = "/home/benchmark/benchmark_save_index/deep10M/index.dat";
-constexpr char *deep10M_coarse_codebook_file_name = "/home/benchmark/benchmark_save_index/deep10M/coarse.dat";
-constexpr char *deep10M_fine_codebook_file_name = "/home/benchmark/benchmark_save_index/deep10M/fine.dat";
-constexpr char *deep10M_cell_assign_file_name = "/home/benchmark/benchmark_save_index/deep10M/cell_assign.dat";
-constexpr char *deep10M_tinker_file_name = "/home/benchmark/benchmark_save_index/deep10M/tinker_relations.dat";
+constexpr char *deep10M_train_fea_file_name = "deep10M/train_fea.dat";
+constexpr char *deep10M_index_file_name = "deep10M/index.dat";
+constexpr char *deep10M_coarse_codebook_file_name = "deep10M/coarse.dat";
+constexpr char *deep10M_fine_codebook_file_name = "deep10M/fine.dat";
+constexpr char *deep10M_cell_assign_file_name = "deep10M/cell_assign.dat";
+constexpr char *deep10M_tinker_file_name = "deep10M/tinker_relations.dat";
 
 //choosen edition
 #ifdef test_sift1M
@@ -130,6 +131,7 @@ public:
 #endif
         google::SetCommandLineOption("coarse_cluster_count", "316");
         google::SetCommandLineOption("fine_cluster_count", "316");
+        google::SetCommandLineOption("index_path", "");
         google::SetCommandLineOption("feature_file_name", feature_file_name);
         google::SetCommandLineOption("train_fea_file_name", train_fea_file_name);
         google::SetCommandLineOption("index_file_name", index_file_name);
