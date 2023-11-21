@@ -1,6 +1,7 @@
 //
 // Created by yzq on 11/16/23.
 //
+#define test_316 0
 
 #include <cstring>
 #include <iostream>
@@ -16,6 +17,7 @@
 constexpr int dim = 96;
 constexpr int nq = 10000;
 constexpr int top_k = 100;
+constexpr int repeat_time = 10;
 
 double now_time() {
     struct timeval tv;
@@ -55,17 +57,23 @@ public:
         std::string feature_dim = std::to_string(dim);
         google::SetCommandLineOption("feature_dim", feature_dim.c_str());
         google::SetCommandLineOption("whether_norm", "false");
+        google::SetCommandLineOption("search_coarse_count", "1");
+        google::SetCommandLineOption("tinker_search_range", "500");
         //google::SetCommandLineOption("kmeans_iterations_count", "1");
+#ifdef test_1000
+        google::SetCommandLineOption("coarse_cluster_count", "1000");
+        google::SetCommandLineOption("fine_cluster_count", "1000");
+#endif
+#ifdef test_316
         google::SetCommandLineOption("coarse_cluster_count", "316");
         google::SetCommandLineOption("fine_cluster_count", "316");
-        google::SetCommandLineOption("search_coarse_count", "1");
-        google::SetCommandLineOption("tinker_search_range", "100");
         google::SetCommandLineOption("index_file_name", "index_316.dat");
         google::SetCommandLineOption("coarse_codebook_file_name", "coarse_316.dat");
         google::SetCommandLineOption("fine_codebook_file_name", "fine_316.dat");
         google::SetCommandLineOption("cell_assign_file_name", "cell_assign_316.dat");
         google::SetCommandLineOption("tinker_file_name", "tinker_relations_316.dat");
         google::SetCommandLineOption("train_fea_file_name", "mid-data/train_clusters_316.dat");
+#endif
         //google::SetCommandLineOption("train_points_count", "100000");
 
         _query_filename = "/home/yzq/Downloads/deep1B_queries.fvecs";
@@ -172,57 +180,67 @@ public:
         std::vector<uint32_t> local_idx(request.topk * nq);
         response.distance = distance.data();
         response.local_idx = local_idx.data();
-        uint32_t match_pair_cnt = 0;
 
-        double tot_time = 0;
-        double calc_recall_time = 0;
+        uint32_t match_pair_cnt_max = 0;
+        for (int repeat_n = 0; repeat_n < repeat_time; ++repeat_n) {
+            uint32_t match_pair_cnt = 0;
+            double tot_time = 0;
+            double calc_recall_time = 0;
 
-        for (int i = 0; i < nq; ++i) {
-            request.feature = query_feature.data() + i * dim;
+            for (int i = 0; i < nq; ++i) {
+                request.feature = query_feature.data() + i * dim;
 
-            auto t0 = now_time();
-            ret = _index->search(&request, &response);
-            tot_time += now_time() - t0;
-            auto t1 = now_time();
+                auto t0 = now_time();
+                ret = _index->search(&request, &response);
+                tot_time += now_time() - t0;
+                auto t1 = now_time();
 
-            if (ret != 0) {
-                std::cerr << "search item " << i << " error" << ret << std::endl;
-                break;
-            }
-
-            for (int j = 0; j < 100 && j < (int) response.result_num; j++) {
-                //LOG(INFO)<<"\t"<<i<<"\t"<<j<<"\t"<<response.local_idx[j]<<" "<<groundtruth_data[i][j];
-
-                auto ite = std::find(groundtruth_data[i].begin(), groundtruth_data[i].end(), response.local_idx[j]);
-
-                if (ite != groundtruth_data[i].end()) {
-                    ++match_pair_cnt;
+                if (ret != 0) {
+                    std::cerr << "search item " << i << " error" << ret << std::endl;
+                    break;
                 }
-            }
-            calc_recall_time += now_time() - t1;
-        }
-        double avg_tot_cnt = (double)response.tot_cnt/nq;
-        std::cout << "avg_tot_cnt:" << avg_tot_cnt << std::endl;
-        double avg_loop_cnt = (double)response.loop_cnt/nq;
-        std::cout << "avg_loop_cnt:" << avg_loop_cnt << std::endl;
-        //output percentage
-        std::cout << "percentage:" << avg_loop_cnt / avg_tot_cnt << std::endl;
-        //output avg hnsw distance_computations
-        std::cout << "avg hnsw distance_computations:"
-                  << (double) (((puck::TinkerIndex *) _index.get())->_tinker_index->distance_computations_) / nq
-                  << std::endl;
 
-        //output tinker_search_range
-        std::cout << "tinker_search_range:" << puck::FLAGS_tinker_search_range << std::endl;
-        //output search time
-        std::cout << "\n###########################################" << std::endl;
-        std::cout << "time: " << tot_time << " s" << std::endl;
-        //output qps
-        std::cout << "qps: " << nq / (tot_time) << std::endl;
-        std::cout << "recall = " << 1.0 * match_pair_cnt / (nq * top_k) << std::endl;
-        std::cout << "###########################################\n" << std::endl;
-        std::cout << "calc recall time: " << calc_recall_time << " s" << std::endl;
-        return 1.0 * match_pair_cnt / (nq * top_k);
+                for (int j = 0; j < 100 && j < (int) response.result_num; j++) {
+                    //LOG(INFO)<<"\t"<<i<<"\t"<<j<<"\t"<<response.local_idx[j]<<" "<<groundtruth_data[i][j];
+
+                    auto ite = std::find(groundtruth_data[i].begin(), groundtruth_data[i].end(), response.local_idx[j]);
+
+                    if (ite != groundtruth_data[i].end()) {
+                        ++match_pair_cnt;
+                    }
+                }
+                calc_recall_time += now_time() - t1;
+            }
+            if (repeat_n == 0) {
+                std::cout << "\n###########################################" << std::endl;
+                double avg_tot_cnt = (double) response.tot_cnt / nq;
+                std::cout << "avg_tot_cnt:" << avg_tot_cnt << std::endl;
+                double avg_loop_cnt = (double) response.loop_cnt / nq;
+                std::cout << "avg_loop_cnt:" << avg_loop_cnt << std::endl;
+                //output percentage
+                std::cout << "percentage:" << avg_loop_cnt / avg_tot_cnt << std::endl;
+                //output avg hnsw distance_computations
+                std::cout << "avg hnsw distance_computations:"
+                          << (double) (((puck::TinkerIndex *) _index.get())->_tinker_index->distance_computations_) / nq
+                          << std::endl;
+                std::cout << "\n###########################################\n\n" << std::endl;
+            }
+            std::cout << "\n###########################################" << std::endl;
+            //output search_coarse_count
+            std::cout << "search_coarse_count:" << puck::FLAGS_search_coarse_count << std::endl;
+            //output tinker_search_range
+            std::cout << "tinker_search_range:" << puck::FLAGS_tinker_search_range << std::endl;
+            std::cout << "calc recall time: " << calc_recall_time << " s" << std::endl;
+            //output search time
+            std::cout << "\n###########################################" << std::endl;
+            std::cout << "time: " << tot_time << " s" << std::endl;
+            //output qps
+            std::cout << "qps: " << nq / (tot_time) << std::endl;
+            std::cout << "recall = " << 1.0 * match_pair_cnt / (nq * top_k) << std::endl;
+            std::cout << "###########################################\n" << std::endl;
+            match_pair_cnt_max = std::max(match_pair_cnt_max, match_pair_cnt);
+        }
+        return 1.0 * match_pair_cnt_max / (nq * top_k);
     }
 
     void release() {
@@ -312,11 +330,6 @@ int main() {
             std::cout << "after releasing old index, consuming" << kb_r / 1024.0 << " MB" << std::endl;
             auto t1 = now_time();
             std::cout << "time passed:" << t1 - t0 << std::endl;
-            ti.build_index(int(puck::IndexType::TINKER));
-            auto kb_5 = physical_memory_used_by_process();
-            std::cout << "after build TinkerIndex, consuming" << kb_5 / 1024.0 << " MB" << std::endl;
-            auto t2 = now_time();
-            std::cout << "time passed:" << t2 - t1 << std::endl;
             ti.reset_index(int(puck::IndexType::TINKER));
             auto rec3 = ti.cmp_search_recall();
             std::cout << "recall=" << rec3 << std::endl;
