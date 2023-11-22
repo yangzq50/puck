@@ -12,9 +12,9 @@ if(NOT GIT_URL)
     set(GIT_URL "https://github.com")
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-std=c++11 -w -g0 -Ofast -fPIC")
-set(CMAKE_C_FLAGS "-std=c++11 -w -g0 -Ofast -fPIC")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-std=c++17 -lstdc++fs -w -g0 -Ofast -fPIC")
+set(CMAKE_C_FLAGS "-std=c++17 -w -g0 -Ofast -fPIC")
 #add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-DFINTEGER=int)
 
