@@ -31,8 +31,6 @@ target_link_libraries(runtest PUBLIC
 
 gtest_discover_tests(runtest)
 
-set(GTEST_TOOLS_PREFIX ${CMAKE_INSTALL_PREFIX}/test)
-install(TARGETS runtest  DESTINATION ${GTEST_TOOLS_PREFIX})
 
 include_directories(../)
 add_executable(my_benchmark my_benchmark.cpp)
@@ -40,3 +38,6 @@ add_executable(my_benchmark my_benchmark.cpp)
 target_link_libraries(my_benchmark PUBLIC
     puck
 )
+
+set(GTEST_TOOLS_PREFIX ${CMAKE_INSTALL_PREFIX}/test)
+install(TARGETS runtest my_benchmark DESTINATION ${GTEST_TOOLS_PREFIX})

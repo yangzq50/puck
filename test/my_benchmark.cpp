@@ -20,26 +20,27 @@ int top_k = 100;
 int repeat_time = 10;
 size_t coarse_cluster_count = 100;
 size_t fine_cluster_count = 100;
+size_t tinker_construction = 200;
 size_t search_coarse_count = 1;
 size_t tinker_search_range = 100;
 size_t train_points_count = 0;
 
-char *choose_query = nullptr;
-char *choose_groundtruth = nullptr;
+const char *choose_query = nullptr;
+const char *choose_groundtruth = nullptr;
 
-constexpr char *sift1M_query = "/home/benchmark/benchmark_dataset/sift1M/sift_query.fvecs";
-constexpr char *sift1M_groundtruth = "/home/benchmark/benchmark_dataset/sift1M/sift_groundtruth.ivecs";
+const char *sift1M_query = "/home/benchmark/benchmark_dataset/sift1M/sift_query.fvecs";
+const char *sift1M_groundtruth = "/home/benchmark/benchmark_dataset/sift1M/sift_groundtruth.ivecs";
 
-constexpr char *deep10M_query = "/home/benchmark/benchmark_dataset/deep10M/deep10M_query.fvecs";
-constexpr char *deep10M_groundtruth = "/home/benchmark/benchmark_dataset/deep10M/deep10M_groundtruth.ivecs";
+const char *deep10M_query = "/home/benchmark/benchmark_dataset/deep10M/deep10M_query.fvecs";
+const char *deep10M_groundtruth = "/home/benchmark/benchmark_dataset/deep10M/deep10M_groundtruth.ivecs";
 
-constexpr char *index_path_root = "/home/benchmark/benchmark_save_index/tinker_index";
+const char *index_path_root = "/home/benchmark/benchmark_save_index/tinker_index";
 
 //sift1M base files
-constexpr char *sift1M_feature_file_name = "sift1M_base.fvecs";
+const char *sift1M_feature_file_name = "sift1M_base.fvecs";
 
 //deep10M base files
-constexpr char *deep10M_feature_file_name = "deep10M_base.fvecs";
+const char *deep10M_feature_file_name = "deep10M_base.fvecs";
 
 
 
@@ -311,6 +312,13 @@ int main() {
         if (input_repeat_time != 0) {
             repeat_time = input_repeat_time;
         }
+        //let user choose tinker_construction
+        std::cout << "please input tinker_construction, default value is 200." << std::endl;
+        int input_tinker_construction = 0;
+        std::cin >> input_tinker_construction;
+        if (input_tinker_construction != 0) {
+            tinker_construction = input_tinker_construction;
+        }
         //let user choose coarse_cluster_count and fine_cluster_count
         std::cout << "please input coarse_cluster_count and fine_cluster_count, default values are 100 and 100."
                   << std::endl;
@@ -346,6 +354,8 @@ int main() {
         auto s_tinker_search_range = std::to_string(tinker_search_range);
         google::SetCommandLineOption("tinker_search_range", s_tinker_search_range.c_str());
         //google::SetCommandLineOption("kmeans_iterations_count", "1");
+        auto s_tinker_construction = std::to_string(tinker_construction);
+        google::SetCommandLineOption("tinker_construction", s_tinker_construction.c_str());
         auto s_coarse_cluster_count = std::to_string(coarse_cluster_count);
         google::SetCommandLineOption("coarse_cluster_count", s_coarse_cluster_count.c_str());
         auto s_fine_cluster_count = std::to_string(fine_cluster_count);
