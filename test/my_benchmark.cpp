@@ -360,7 +360,9 @@ int main() {
         google::SetCommandLineOption("coarse_cluster_count", s_coarse_cluster_count.c_str());
         auto s_fine_cluster_count = std::to_string(fine_cluster_count);
         google::SetCommandLineOption("fine_cluster_count", s_fine_cluster_count.c_str());
-        std::string file_suffix = "." + s_coarse_cluster_count + "_" + s_fine_cluster_count;
+        std::string file_suffix = ".tinker_construction." + s_tinker_construction +
+                                  ".coarse_cluster_count." + s_coarse_cluster_count + ".fine_cluster_count." +
+                                  s_fine_cluster_count;
 
         google::SetCommandLineOption("index_path", index_path_root);
         google::SetCommandLineOption("feature_file_name", feature_file_name.c_str());
@@ -404,6 +406,7 @@ int main() {
                     std::cout << "time passed:" << t2 - t1 << std::endl;
                 }
             }
+            ti.reset_index(int(puck::IndexType::TINKER));
             auto rec3 = ti.cmp_search_recall();
             std::cout << "recall=" << rec3 << std::endl;
             auto kb_6 = physical_memory_used_by_process();
