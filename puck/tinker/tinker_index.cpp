@@ -133,10 +133,15 @@ int TinkerIndex::search(const Request* request, Response* response) {
         return ret;
     }
 
+    context->loop_cnt = 0;
+    context->tot_cnt = 0;
     int nearest_cell_id = search_top1_fine_cluster(context.get(), feature);
     const auto* cur_fine_cluster = get_fine_cluster(nearest_cell_id);
     std::vector<int> eps;
 
+    //output context->loop_cnt / context->tot_cnt
+    response->loop_cnt += context->loop_cnt;
+    response->tot_cnt += context->tot_cnt;
     for (auto i = cur_fine_cluster->memory_idx_start; i < (cur_fine_cluster + 1)->memory_idx_start; ++i) {
         eps.push_back(i);
     }

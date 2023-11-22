@@ -27,32 +27,19 @@ size_t train_points_count = 0;
 char *choose_query = nullptr;
 char *choose_groundtruth = nullptr;
 
-//constexpr char *sift1M_base = "/home/benchmark/benchmark_dataset/sift1M/sift_base.fvecs";
 constexpr char *sift1M_query = "/home/benchmark/benchmark_dataset/sift1M/sift_query.fvecs";
 constexpr char *sift1M_groundtruth = "/home/benchmark/benchmark_dataset/sift1M/sift_groundtruth.ivecs";
-//constexpr char *deep10M_base = "/home/benchmark/benchmark_dataset/deep10M/deep10M_base.fvecs";
+
 constexpr char *deep10M_query = "/home/benchmark/benchmark_dataset/deep10M/deep10M_query.fvecs";
 constexpr char *deep10M_groundtruth = "/home/benchmark/benchmark_dataset/deep10M/deep10M_groundtruth.ivecs";
 
 constexpr char *index_path_root = "/home/benchmark/benchmark_save_index/tinker_index";
 
-//sift1M save files
-constexpr char *sift1M_feature_file_name = "sift1M/sift_base.fvecs";;
-constexpr char *sift1M_train_fea_file_name = "sift1M/train_fea.dat";
-constexpr char *sift1M_index_file_name = "sift1M/index.dat";
-constexpr char *sift1M_coarse_codebook_file_name = "sift1M/coarse.dat";
-constexpr char *sift1M_fine_codebook_file_name = "sift1M/fine.dat";
-constexpr char *sift1M_cell_assign_file_name = "sift1M/cell_assign.dat";
-constexpr char *sift1M_tinker_file_name = "sift1M/tinker_relations.dat";
+//sift1M base files
+constexpr char *sift1M_feature_file_name = "sift1M_base.fvecs";
 
-//deep10M save files
-constexpr char *deep10M_feature_file_name = "deep10M/deep10M_base.fvecs";
-constexpr char *deep10M_train_fea_file_name = "deep10M/train_fea.dat";
-constexpr char *deep10M_index_file_name = "deep10M/index.dat";
-constexpr char *deep10M_coarse_codebook_file_name = "deep10M/coarse.dat";
-constexpr char *deep10M_fine_codebook_file_name = "deep10M/fine.dat";
-constexpr char *deep10M_cell_assign_file_name = "deep10M/cell_assign.dat";
-constexpr char *deep10M_tinker_file_name = "deep10M/tinker_relations.dat";
+//deep10M base files
+constexpr char *deep10M_feature_file_name = "deep10M_base.fvecs";
 
 
 
@@ -272,13 +259,14 @@ private:
 };
 
 int main() {
-    char *feature_file_name = nullptr;
-    char *train_fea_file_name = nullptr;
-    char *index_file_name = nullptr;
-    char *coarse_codebook_file_name = nullptr;
-    char *fine_codebook_file_name = nullptr;
-    char *cell_assign_file_name = nullptr;
-    char *tinker_file_name = nullptr;
+    std::string feature_file_name;
+    std::string dataset_subdir;
+    std::string train_fea_file_name = "train_fea.dat";
+    std::string index_file_name = "index.dat";
+    std::string coarse_codebook_file_name = "coarse.dat";
+    std::string fine_codebook_file_name = "fine.dat";
+    std::string cell_assign_file_name = "cell_assign.dat";
+    std::string tinker_file_name = "tinker_relations.dat";
     //let user choose to test sift1M or deep10M
     enum test_type {
         invalid = 0, sift1M = 1, deep10M = 2
@@ -290,31 +278,21 @@ int main() {
     std::cin >> choose;
     switch (choose) {
         case test_type::sift1M: {
+            dataset_subdir = "sift1M/";
             dim = 128;
             nq = 10000;
             choose_query = sift1M_query;
             choose_groundtruth = sift1M_groundtruth;
             feature_file_name = sift1M_feature_file_name;
-            train_fea_file_name = sift1M_train_fea_file_name;
-            index_file_name = sift1M_index_file_name;
-            coarse_codebook_file_name = sift1M_coarse_codebook_file_name;
-            fine_codebook_file_name = sift1M_fine_codebook_file_name;
-            cell_assign_file_name = sift1M_cell_assign_file_name;
-            tinker_file_name = sift1M_tinker_file_name;
             break;
         }
         case test_type::deep10M: {
+            dataset_subdir = "deep10M/";
             dim = 96;
             nq = 10000;
             choose_query = deep10M_query;
             choose_groundtruth = deep10M_groundtruth;
             feature_file_name = deep10M_feature_file_name;
-            train_fea_file_name = deep10M_train_fea_file_name;
-            index_file_name = deep10M_index_file_name;
-            coarse_codebook_file_name = deep10M_coarse_codebook_file_name;
-            fine_codebook_file_name = deep10M_fine_codebook_file_name;
-            cell_assign_file_name = deep10M_cell_assign_file_name;
-            tinker_file_name = deep10M_tinker_file_name;
             break;
         }
         default:
@@ -374,20 +352,19 @@ int main() {
         google::SetCommandLineOption("fine_cluster_count", s_fine_cluster_count.c_str());
         std::string file_suffix = "." + s_coarse_cluster_count + "_" + s_fine_cluster_count;
 
-        std::string real_index_path_root = std::string(index_path_root);
-        google::SetCommandLineOption("index_path", real_index_path_root.c_str());
-        google::SetCommandLineOption("feature_file_name", feature_file_name);
-        std::string real_train_fea_file_name = std::string(train_fea_file_name) + file_suffix;
+        google::SetCommandLineOption("index_path", index_path_root);
+        google::SetCommandLineOption("feature_file_name", feature_file_name.c_str());
+        std::string real_train_fea_file_name = dataset_subdir + train_fea_file_name + file_suffix;
         google::SetCommandLineOption("train_fea_file_name", real_train_fea_file_name.c_str());
-        std::string real_index_file_name = std::string(index_file_name) + file_suffix;
+        std::string real_index_file_name = dataset_subdir + index_file_name + file_suffix;
         google::SetCommandLineOption("index_file_name", real_index_file_name.c_str());
-        std::string real_coarse_codebook_file_name = std::string(coarse_codebook_file_name) + file_suffix;
+        std::string real_coarse_codebook_file_name = dataset_subdir + coarse_codebook_file_name + file_suffix;
         google::SetCommandLineOption("coarse_codebook_file_name", real_coarse_codebook_file_name.c_str());
-        std::string real_fine_codebook_file_name = std::string(fine_codebook_file_name) + file_suffix;
+        std::string real_fine_codebook_file_name = dataset_subdir + fine_codebook_file_name + file_suffix;
         google::SetCommandLineOption("fine_codebook_file_name", real_fine_codebook_file_name.c_str());
-        std::string real_cell_assign_file_name = std::string(cell_assign_file_name) + file_suffix;
+        std::string real_cell_assign_file_name = dataset_subdir + cell_assign_file_name + file_suffix;
         google::SetCommandLineOption("cell_assign_file_name", real_cell_assign_file_name.c_str());
-        std::string real_tinker_file_name = std::string(tinker_file_name) + file_suffix;
+        std::string real_tinker_file_name = dataset_subdir + tinker_file_name + file_suffix;
         google::SetCommandLineOption("tinker_file_name", real_tinker_file_name.c_str());
     }
 
