@@ -79,9 +79,6 @@ size_t physical_memory_used_by_process() {
 class my_TestIndex {
 public:
     my_TestIndex() {
-        if (train_points_count != 0) {
-            google::SetCommandLineOption("train_points_count", std::to_string(train_points_count).c_str());
-        }
         _query_filename = choose_query;
         _groundtruth_filename = choose_groundtruth;
     }
@@ -344,6 +341,23 @@ int main() {
         //let user choose train_points_count
         std::cout << "please input train_points_count." << std::endl;
         std::cin >> train_points_count;
+        if (train_points_count != 0) {
+            google::SetCommandLineOption("train_points_count", std::to_string(train_points_count).c_str());
+        }
+    }
+    {
+        //output chosen parameters
+        std::cout << "chosen parameters:" << std::endl;
+        std::cout << "train_points_count=" << puck::FLAGS_train_points_count << std::endl;
+        std::cout << "dim=" << dim << std::endl;
+        std::cout << "nq=" << nq << std::endl;
+        std::cout << "top_k=" << top_k << std::endl;
+        std::cout << "repeat_time=" << repeat_time << std::endl;
+        std::cout << "tinker_construction=" << puck::FLAGS_tinker_construction << std::endl;
+        std::cout << "coarse_cluster_count=" << puck::FLAGS_coarse_cluster_count << std::endl;
+        std::cout << "fine_cluster_count=" << puck::FLAGS_fine_cluster_count << std::endl;
+        std::cout << "search_coarse_count=" << puck::FLAGS_search_coarse_count << std::endl;
+        std::cout << "tinker_search_range=" << puck::FLAGS_tinker_search_range << std::endl;
     }
     {
         std::string feature_dim = std::to_string(dim);
